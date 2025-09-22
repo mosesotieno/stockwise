@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ product.name }}</h1>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Product Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>SKU:</strong> {{ product.sku }}</p>
+                <p><strong>Category:</strong> {{ product.category }}</p>
+                <p><strong>Description:</strong> {{ product.description }}</p>
+                <p><strong>Cost Price:</strong> Ksh {{ product.cost_price }}</p>
+                <p><strong>Selling Price:</strong> Ksh {{ product.selling_price }}</p>
+                <p><strong>Supplier:</strong> {{ product.supplier }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Stock Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Current Stock:</strong> {{ product.current_stock }}</p>
+                <p><strong>Minimum Level:</strong> {{ product.min_stock_level }}</p>
+                <p><strong>Status:</strong> 
+                    {% if product.is_low_stock %}
+                    <span class="text-danger">LOW STOCK - Please reorder!</span>
+                    {% else %}
+                    <span class="text-success">Stock Level OK</span>
+                    {% endif %}
+                </p>
+                <a href="/admin/inventory/stocktransaction/add/" class="btn btn-warning">Adjust Stock</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Create New Sale</h1>
+
+<form method="post" id="sale-form">
+    {% csrf_token %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">Sale Information</div>
+                <div class="card-body">
+                    {{ form.as_p }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Make sure you have the formset rendering correctly -->
+<div class="card mb-4">
+    <div class="card-header">Sale Items</div>
+    <div class="card-body">
+        {{ formset.management_form }}
+        <div id="formset-container">
+            {% for form in formset %}
+                <div class="sale-item-form row mb-3">
+                    <div class="col-md-5">
+                        {{ form.product.label_tag }}
+                        {{ form.product }}
+                        {% if form.product.errors %}
+                            <div class="text-danger small">
+                                {{ form.product.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form.quantity.label_tag }}
+                        {{ form.quantity }}
+                        {% if form.quantity.errors %}
+                            <div class="text-danger small">
+                                {{ form.quantity.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.unit_price.label_tag }}
+                        {{ form.unit_price }}
+                        {% if form.unit_price.errors %}
+                            <div class="text-danger small">
+                                {{ form.unit_price.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        {% if form.DELETE %}
+                            {{ form.DELETE.label_tag }}
+                            {{ form.DELETE }}
+                        {% endif %}
+                        <button type="button" class="btn btn-danger btn-sm remove-form">Remove</button>
+                    </div>
+                    {{ form.id }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-form" class="btn btn-secondary mt-2">Add Another Item</button>
+    </div>
+</div>
+
+    <div class="card mb-4">
+        <div class="card-header">Sale Summary</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Total Items:</strong> <span id="total-items">0</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Total Amount:</strong> Ksh <span id="total-amount">0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Complete Sale</button>
+    <a href="{% url 'inventory:dashboard' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formsetContainer = document.getElementById('formset-container');
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    const addButton = document.getElementById('add-form');
+
+    if (addButton) {
+        addButton.addEventListener('click', function() {
+            const formCount = parseInt(totalForms.value);
+            const newForm = formsetContainer.querySelector('.sale-item-form').cloneNode(true);
+            
+            // Update indices in the new form
+            const regex = new RegExp('form-' + (formCount - 1) + '-', 'g');
+            newForm.innerHTML = newForm.innerHTML.replace(regex, 'form-' + formCount + '-');
+            
+            // Clear input values
+            newForm.querySelectorAll('input:not([type="hidden"]), select').forEach(input => {
+                input.value = '';
+            });
+            
+            // Update IDs and names
+            newForm.querySelectorAll('[id*="form-"][id*="-id"]').forEach(elem => {
+                elem.id = elem.id.replace('form-' + (formCount - 1) + '-', 'form-' + formCount + '-');
+            });
+            
+            newForm.querySelectorAll('[name*="form-"][name*="-id"]').forEach(elem => {
+                elem.name = elem.name.replace('form-' + (formCount - 1) + '-', 'form-' + formCount + '-');
+            });
+            
+            formsetContainer.appendChild(newForm);
+            totalForms.value = formCount + 1;
+        });
+    }
+
+    // Remove form functionality
+    formsetContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-form')) {
+            const form = e.target.closest('.sale-item-form');
+            const forms = formsetContainer.querySelectorAll('.sale-item-form');
+            if (forms.length > 1) {
+                form.remove();
+                // Update indices for remaining forms
+                Array.from(forms).forEach((form, index) => {
+                    form.querySelectorAll('input, select').forEach(input => {
+                        if (input.name) {
+                            input.name = input.name.replace(/form-\d+/, 'form-' + index);
+                        }
+                        if (input.id) {
+                            input.id = input.id.replace(/id_form-\d+/, 'id_form-' + index);
+                        }
+                    });
+                });
+                totalForms.value = forms.length - 1;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

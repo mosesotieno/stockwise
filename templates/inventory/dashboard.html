@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ total_products }}</h5>
+                <p class="card-text">Total Products</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Low Stock Alert</h5>
+            </div>
+            <div class="card-body">
+                {% if low_stock_products %}
+                <ul class="list-group">
+                    {% for product in low_stock_products %}
+                    <li class="list-group-item list-group-item-danger">
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a> 
+                        - {{ product.current_stock }} left (min: {{ product.min_stock_level }})
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-success">All stock levels are good.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Sales</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_sales %}
+                <ul class="list-group">
+                    {% for sale in recent_sales %}
+                    <li class="list-group-item">
+                        <a href="{% url 'inventory:sale-detail' sale.pk %}">{{ sale.sale_number }}</a>
+                        - Ksh {{ sale.total_amount }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No recent sales.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Sale Details: {{ sale.sale_number }}</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Sale Information</div>
+            <div class="card-body">
+                <p><strong>Date:</strong> {{ sale.date }}</p>
+                <p><strong>Payment Method:</strong> {{ sale.payment_method }}</p>
+                <p><strong>Total Amount:</strong> Ksh {{ sale.total_amount }}</p>
+                {% if sale.notes %}
+                <p><strong>Notes:</strong> {{ sale.notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">Sale Items</div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sale.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>Ksh {{ item.unit_price }}</td>
+                    <td>Ksh {{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td><strong>Ksh {{ sale.total_amount }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<a href="{% url 'inventory:sale-list' %}" class="btn btn-secondary mt-3">Back to Sales</a>
+{% endblock %}

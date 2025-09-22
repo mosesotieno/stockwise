@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Low Stock Report</h1>
+
+{% if products %}
+<div class="alert alert-warning">
+    <strong>{{ products|length }} product(s) are low on stock</strong>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Current Stock</th>
+            <th>Minimum Level</th>
+            <th>Difference</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.sku }}</td>
+            <td class="text-danger">{{ product.current_stock }}</td>
+            <td>{{ product.min_stock_level }}</td>
+            <td class="text-danger">{{ product.min_stock_level|add:"0"|add:product.current_stock|add:"-1" }}</td>
+            <td>
+                <a href="/admin/inventory/stocktransaction/add/" class="btn btn-sm btn-warning">Add Stock</a>
+                <a href="{% url 'inventory:product-detail' product.pk %}" class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-success">
+    <strong>All products have sufficient stock levels!</strong>
+</div>
+{% endif %}
+{% endblock %}

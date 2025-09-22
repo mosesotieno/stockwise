@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    {% if object %}Edit Product{% else %}Add New Product{% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
+                            <h5 class="text-primary mb-3">Basic Information</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.sku.id_for_label }}" class="form-label">SKU *</label>
+                                {% render_field form.sku class="form-control" placeholder="Enter product SKU" %}
+                                {% if form.sku.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.sku.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Product Name *</label>
+                                {% render_field form.name class="form-control" placeholder="Enter product name" %}
+                                {% if form.name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                {% render_field form.category class="form-control" placeholder="e.g., Electronics, Clothing" %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {% render_field form.description class="form-control" rows="3" placeholder="Product description..." %}
+                            </div>
+                        </div>
+
+                        <!-- Pricing & Stock -->
+                        <div class="col-md-6">
+                            <h5 class="text-primary mb-3">Pricing & Stock</h5>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.buying_price.id_for_label }}" class="form-label">Cost Price (Ksh) *</label>
+                                {% render_field form.buying_price class="form-control" step="0.01" min="0" placeholder="0.00" %}
+                                {% if form.cost_price.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.cost_price.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.selling_price.id_for_label }}" class="form-label">Selling Price (Ksh) *</label>
+                                {% render_field form.selling_price class="form-control" step="0.01" min="0" placeholder="0.00" %}
+                                {% if form.selling_price.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.selling_price.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.current_stock.id_for_label }}" class="form-label">Current Stock *</label>
+                                {% render_field form.current_stock class="form-control" min="0" placeholder="0" %}
+                                {% if form.current_stock.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.current_stock.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.min_stock_level.id_for_label }}" class="form-label">Minimum Stock Level *</label>
+                                {% render_field form.min_stock_level class="form-control" min="0" placeholder="5" %}
+                                {% if form.min_stock_level.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.min_stock_level.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">Alert will trigger when stock reaches this level</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supplier Information -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">Supplier Information</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.supplier.id_for_label }}" class="form-label">Supplier Name</label>
+                                        {% render_field form.supplier class="form-control" placeholder="Supplier company name" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.supplier_contact.id_for_label }}" class="form-label">Supplier Contact</label>
+                                        {% render_field form.supplier_contact class="form-control" placeholder="Phone, email, or contact person" %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {% if object %}Update Product{% else %}Add Product{% endif %}
+                        </button>
+                        <a href="{% url 'inventory:product-list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid #dee2e6;
+}
+</style>
+{% endblock %}
